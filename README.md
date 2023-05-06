@@ -3,7 +3,7 @@ Its cookie clicker but better IG
 
 I suck at coding, I was taught by my friend and ChatGPT (No, the game is not coded by ChatGPT). Despite that, most of it is self taught.
 
-You can run it in your terminal or powershell or you could play it on Replit, which will most likely be more updayed. The link is: https://replit.com/@114023/Etherium-Miner
+You can run it in your terminal or powershell or you could play it on Replit, which will most likely be more updayed. The link is: https://replit.com/@114023/Etherium-Miner?v=1
 Etherium Miner is a Python-based cookie clicker game. You play this game in the console. Let me get ChatGPT to explain to you how to run the game outside of Replit:
 
 To install and run a Python game from GitHub, you will need to follow these general steps:
