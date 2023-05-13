@@ -1,0 +1,27 @@
+Sure, here's a step-by-step guide to help you install Python on a Linux system:
+
+1. Open your terminal emulator, which can be found in your applications menu.
+
+2. Enter the following command to update your system's package manager: 
+
+```
+sudo apt-get update
+```
+
+3. Once the update is complete, enter the following command to install Python 3:
+
+```
+sudo apt-get install python3
+```
+
+4. The package manager will download and install Python 3 along with any dependencies. This may take a few minutes to complete.
+
+5. To verify that Python was installed correctly, enter the following command:
+
+```
+python3 --version
+```
+
+This will display the version of Python that was installed.
+
+That's it! Python is now installed on your Linux system. You can start using Python by entering the Python interpreter in the terminal by typing `python3` and pressing enter.
