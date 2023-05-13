@@ -1,0 +1,15 @@
+Open your web browser and go to the official Python website at www.python.org/downloads.
+
+Click on the "Download Python" button on the homepage.
+
+You will be redirected to a page with the latest version of Python available for download. Scroll down to the "Files" section and click on the "Windows" button to download the installer for Windows.
+
+Once the download is complete, navigate to the download location and double-click on the downloaded installer file. The filename will look something like "python-3.9.5-amd64.exe" depending on the version you downloaded.
+
+The installer will launch and display the Python Setup wizard. Click "Install Now" to install Python with the default options.
+
+The installer will begin the installation process. You may see a progress bar or some other indication of the installation status. This may take a few minutes to complete.
+
+Once the installation is complete, you will see a message indicating that Python was installed successfully. Click "Close" to exit the installer.
+
+That's it! Python is now installed on your Windows computer. To verify that Python was installed correctly, open the Command Prompt (press the Windows key + R, type "cmd" and press Enter) and type "python" (without the quotes) at the prompt. If Python is installed correctly, you should see the Python version number and the Python prompt ">>>" appear.
