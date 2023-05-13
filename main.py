@@ -154,12 +154,6 @@ def play_game():
               print(Fore.RED + "Invalid input! Please choose 1, 2, or 3")
               input("Press Enter to continue...")
               playing = True
-
-
-    else:
-      print("Try to reach a milestone first!")
-      input("Press Enter to continue...")
-# Initialize the colorama module
 init()
 # Sets the colors
 print(Fore.WHITE + Back.BLACK + Style.BRIGHT + " ")
@@ -275,17 +269,18 @@ while started == 1:
       input("Press Enter to close")
     elif user_input.lower() == "investigate":
         if auto:
+          amount = random.randint(100,130)
           if random.randint(0,10) < 3:
-            print("You found Etherium!")
-            input("Press Enter to continue...")
-            while sus < random.randint(5,25) * program:
+            input("Press Enter to start looking...")
+
+            while sus < amount:
                 auto = False
                 ETH += 1
                 sus += 1
                 clear_screen()
-                print(f"You have {Fore.BLUE} {ETH} Etherium.{Fore.WHITE}")
-                print("Automating... (do not press any keys)")
-                time.sleep(0.2)
+                print(f"You found {sus} {Fore.BLUE}Etherium!{Fore.WHITE}")
+                print(f"You have {Fore.BLUE}{ETH} Etherium.{Fore.WHITE}")
+                time.sleep(0.15)
             input("Press Enter to continue...")
             auto=False
           else:
