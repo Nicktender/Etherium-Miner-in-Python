@@ -1,0 +1,3 @@
+To run my game, Etherium Miner, you need to install Python. You can do so by following the instructions for your system. Once you complete those steps, follow these instructions.
+
+Install the
