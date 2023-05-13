@@ -1,59 +1,102 @@
+clicks = 0
+ETH = 0
+multiplier = 1
+started = 0
+milestones = 0
+program = 0
+sus = 0
+level = 1
+auto = False
+Named = False
+import signal
+
+def signal_handler(signal, frame):
+    pass
+
 import os
 import random
 playing = False
 import time
 from colorama import init, Fore, Back, Style
 symbols = ['!', '@', '#', '$', '%', '^', '&', '*', '-', '+', '_', '=', '?', '/', '|', '\\', ':', ';', '"', "'", ',', '.', '<', '>', '(', ')', '{', '}']
-Base_Temp = 60
-Temp = 0
-def load():
-  global SaveLoad
-  print(Fore.RED+"Sorry, this doesn't work yet. I plan to add it in the future, thats why it's here.")
-  SaveLoad = 1
-  return SaveLoad
-def save():
-  global SaveLoad
-  print(Fore.RED+"Sorry, this doesn't work yet. I plan to add it in the future, thats why it's here.")
-  SaveLoad = 1
-  return SaveLoad
+import json
+
+def encrypt_binary(data):
+    json_str = json.dumps(data)
+    binary_str = ''.join(['!' if bit == '1' else '|' for bit in ''.join(format(ord(char), '08b') for char in json_str)])
+    return binary_str.encode()
+
+def decrypt_binary(binary_str):
+    binary_str = binary_str.decode()
+    json_str = ''.join([chr(int(binary_str[i:i+8].replace('!', '1').replace('|', '0'), 2)) for i in range(0, len(binary_str), 8)])
+    data = json.loads(json_str)
+    return data
+
+
+def save(Username, data):
+    encrypted_data = encrypt_binary(data)
+    with open(f"{Username}.Nicktender", "wb") as f:
+        f.write(encrypted_data)
+    print("This is your save file.")
+    print("Highlight the data, then press CRTL + SHIFT + C to copy.")
+    with open(f"{Username}.Nicktender", "rb") as file:
+      # Read the data
+        data = file.read()
+        print("")
+        print(data)
+def load(Username):
+        loading = True
+        clear_screen()
+        while loading:
+          try:
+            encrypted_data = input("Save File Data: ")
+            data = decrypt_binary(encrypted_data.encode())
+            global clicks, ETH, multiplier, started, milestones, program, sus, level, auto, Named
+            clicks = data['clicks']
+            ETH = data['ETH']
+            multiplier = data['multiplier']
+            started = data['started']
+            milestones = data['milestones']
+            program = data['program']
+            sus = data['sus']
+            level = data['level']
+            auto = data['auto']
+            Named = data['Named']
+            loading = False
+            print(f"{Fore.GREEN}Succesfully loaded save!")
+            input(f"{Fore.WHITE}Press Enter to continue...")
+          except:
+            clear_screen()
+            print(f"{Fore.RED}Error loading data! Your file may be corrupted.{Fore.WHITE}")
+            input("Press Enter to continue...")
+            clear_screen()
+
+            
+                    
 def clear_screen():
-    print(Fore.WHITE)
+    print(Back.BLACK, Fore.WHITE)
     if os.name == 'nt':  # for Windows
         os.system('cls')
     else:  # for Unix-based systems
         os.system('clear')
+#in Replit, this would always be linux  becasue the console is a linux VM, but if your running it locally, this is useful for windows users.
 
 def coin_toss():
     clear_screen()
     global ETH
-    print("Welcome to Coin Toss!")
+    print("Welcome to the Coin Toss!")
     choice = input("Heads or Tails? ").lower()
     while choice not in ("heads", "tails"):
         choice = input(Fore.RED + "Invalid input! Please choose Heads or Tails: ").lower()
     result = random.choice(("heads", "tails"))
-    print("You landed on... ", result)
+    print("It landed on... ", result)
     if choice == result:
         print(Fore.GREEN + "Congratulations! You won!")
-        ETH += random.randint(1,20)
+        ETH += random.randint(60,70)
     else:
         print(Fore.RED +"Sorry, you lost!")
-    input(Fore.WHITE+"Press Enter to continue...")
-
-def wheel():
-    global ETH
-    clear_screen()
-    print("Welcome to the Wheel of Randomness!")
-    prizes = ["100", "50", "25", "10", "5", "0"]
-    input("Press enter to spin the wheel!")
-    result = random.choice(prizes)
-    print("Spinning...")
-    print("You landed on:", result, "ETH")
-    ETH += int(result)
-    if result == "0":
-        print("Better luck next time!")
-    else:
-        print(Fore.GREEN + "Congratulations! You won",Fore.BLUE + result, Fore.GREEN + "ETH!")
-    input("Press Enter to continue...")
+        ETH -= ETH*0.15
+    input ("Press Enter to continue...")
     return ETH
 def rps():
     global ETH
@@ -70,19 +113,19 @@ def rps():
         print("It's a tie!")
         input("Press Enter to continue...")
     elif (player_choice == "rock" and computer_choice == "scissors") or (player_choice == "paper" and computer_choice == "rock") or (player_choice == "scissors" and computer_choice == "paper"):
-        result = random.randint(20,25)
-        print(Fore.GREEN + "Congratulations! You won",Fore.BLUE + result, Fore.GREEN + "ETH!")
+        result = random.randint(50,65)
+        print(f"{Fore.GREEN} Congratulations! You won {Fore.BLUE} {result} Etherium!")
         ETH += result
         return ETH
         input("Press Enter to continue...")
     else:
         print("Sorry, you lose!")
+        ETH -= ETH*0.10
         input("Press Enter to continue...")
 
 def surprise():
     clear_screen()
-    print("Welcome to the Surprise Game!")
-    games = [coin_toss, wheel, rps]
+    games = [coin_toss, rps]
     game = random.choice(games)
     game()
 
@@ -92,25 +135,25 @@ def play_game():
       playing = True
       while playing:
           clear_screen()
-          print("Welcome to the chance spot!")
           print("What would you like to do?")
           print("1. Coin Toss")
-          print("2. Wheel of Randomness")
-          print("3. Rock Paper Scissors")
-          print("4. Surprise me!")
+          print("2. Rock Paper Scissors")
+          print("3. Surprise me!")
           random_choice = input("")
           if random_choice == "1":
               coin_toss()
+              playing = False
           elif random_choice == "2":
-              wheel()
-          elif random_choice == "3":
               rps()
-          elif random_choice == "4":
+              playing = False
+
+          elif random_choice == "3":
               surprise()
+              playing = False
           else:
-              print(Fore.RED + "Invalid input! Please choose 1, 2, 3, or 4.")
+              print(Fore.RED + "Invalid input! Please choose 1, 2, or 3")
               input("Press Enter to continue...")
-          playing = False
+              playing = True
 
 
     else:
@@ -121,23 +164,14 @@ init()
 # Sets the colors
 print(Fore.WHITE + Back.BLACK + Style.BRIGHT + " ")
 target = 1
+color = print(Fore.WHITE + Back.BLACK + Style.BRIGHT + " ")
+
+# Set the signal handler for SIGINT
+signal.signal(signal.SIGINT, signal_handler)
 
 
-clicks = 0
-ETH = 0
-multiplier = 1
 started = 0
-milestones = 0
-cool_factor = 0
-program = 0
-sus = 0
-gain=True
-level = 1
-auto = False
 Named = False
-
-
-
 while started == 0:
   clear_screen()
   while not Named:
@@ -159,65 +193,55 @@ while started == 0:
   if SaveLoad == "1":
     print("Starting new save...")
     input("Press Enter to continue...")
-    SaveLoad = 0
+    clicks = 0
+    ETH = 0
+    multiplier = 1
     started = 1
+    milestones = 0
+    milestone = 0
+    program = 0
+    sus = 0
+    level = 1
+    auto = False
+    if Username == "Admin0409":
+      clicks = 69420
+      ETH = 10000000
+      multiplier = 100
+      started = 1
+      milestone = 15
+      milestones = 15
   elif SaveLoad == "2":
-    load()
+    load(Username)
     input("Press Enter to continue...")
-    SaveLoad = 0
+    started = 1
   else: 
-    print(Fore.RED + "Invalid option. Please enter 1 or 2.")
+    print(Fore.RED + "Invalid option. Please enter 1 or 2." + Fore.WHITE)
     input("Press Enter to continue...")
-Temp += Base_Temp
+
 def add_ETH():
     global ETH
-    global Temp
-    global Base_Temp
-    global cool_factor
-    global program
-    if gain==True:
-      Temp += (PC)*(multiplier + 1.5)//(cool_factor+1)
-      ETH += multiplier
-      global clicks
-      clicks += 1
-    else:
-      ETH += 0.5
-    return clicks
-    return Temp
-    return ETH
-Temp_Color = Fore.GREEN
-def check_temp():
-    global Temp
-    global Temp_Color
-    if Temp >= Base_Temp + 40:
-        Temp_Color = Fore.RED
-    elif Temp <= Base_Temp - 20:
-        Temp_Color = Fore.BLUE
-    else:
-        Temp_Color = Fore.GREEN
-    return Temp_Color
-    return Temp
+    ETH += multiplier
+    global clicks
+    clicks += 1
 while started == 1:
-  if Temp >= 115:
-    gain=False
-  else:
-    gain=True
-    
-  PC = program+1
+  color
+  ETH = round(ETH)
+  if ETH < 1:
+    ETH = 0
   milestone = (clicks // 20)
   if milestone > 0 and clicks % 20 == 0:
     print(f"Milestone unlocked: {milestone}")
     input("Press Enter to continue...")
   clear_screen()
-  print(f"PC count: {PC}")
-  print("Milestone", milestone, Fore.BLUE)
-  print(ETH, "Ethereum mined", Fore.WHITE)
-  check_temp()
-  print(f"{Temp_Color}The current temperature is {Temp}°C{Fore.RESET}")
-  print(Fore.WHITE + "Overclock level of ", multiplier)
+  if Username == "Admin0409":
+    print(f"{Fore.GREEN}Admin{Fore.WHITE}")
+    milestone = 69
+  print("Milestone:", milestone, Fore.BLUE)
+  print(ETH, "Ethereum", Fore.WHITE)
+  print(f"{multiplier} GPUs")
   print("____________________________")
   if auto == True:
-    print("Type auto to afk with earnings. You need to buy it again to use it again!")
+    print("Type investigate to check for Etherium.")
   print("Type help to for actions.")
   print("Type mine to mine!")
   user_input = input("")
@@ -225,110 +249,121 @@ while started == 1:
     add_ETH()
   else:
     if user_input == "save":
-      save()
+      data = {
+      "clicks": clicks,
+      "ETH": ETH,
+      "multiplier": multiplier,
+      "started": started,
+      "milestones": milestones,
+      "program": program,
+      "sus": sus,
+      "level": level,
+      "auto": auto,
+      "Named": Named,
+      }
+      save(Username, data)
       input("Press Enter to continue...")
     elif user_input == "help":
       print("Press enter to mine.")
       if auto:
-        print("Type auto to afk with earnings!")
-      print("Type help for actions.")
-      print("Type shop to buy upgrades!")
-      print("Type chance to play minigames!")
+        print("Type 'investigate' to afk with earnings!")
+      print("Type 'help' for actions.")
+      print("Type 'shop' to buy upgrades!")
       if auto == True:
-        print("Type auto to afk with earnings!")
-      print("Type save to save your progress.")
-      input("Press enter to close")
-    elif user_input.lower() == "chance":
-        play_game()
-    elif user_input == "auto":
+        print("Type 'investigate' to afk with earnings!")
+      print("Type 'save' to save your progress.")
+      input("Press Enter to close")
+    elif user_input.lower() == "investigate":
         if auto:
-            while sus < 25 * program:
+          if random.randint(0,10) < 3:
+            print("You found Etherium!")
+            input("Press Enter to continue...")
+            while sus < random.randint(5,25) * program:
                 auto = False
-                ETH += program
+                ETH += 1
                 sus += 1
                 clear_screen()
-                print("You have", Fore.BLUE + ETH, "Etherium.")
+                print(f"You have {Fore.BLUE} {ETH} Etherium.{Fore.WHITE}")
                 print("Automating... (do not press any keys)")
                 time.sleep(0.2)
             input("Press Enter to continue...")
             auto=False
+          else:
+            print("You did not find any Etherium!")
+            auto = False
+            input("Press Enter to continue...")
         else:
-          print(Fore.RED+"You need more PCs to do that!")
-    elif user_input == "shop":
-      clear_screen()
-      print("SHOP")
-      print("1. Overclock")
-      print("   Every piece of Ethereum mined gets you more!")
-      cost_multiplier = (multiplier + 1) * 20
-      print(Fore.YELLOW)
-      print(f"   Cost: 💰 {cost_multiplier}")
-      print(Fore.WHITE)
-      print("")
-      print("2. Buy PCs")
-      print("   They help you find Ethereum!")
-      PC_price = (program + 1) * 30
-      print(Fore.YELLOW)
-      print(f"   Cost: 💰 {PC_price}")
-      print(Fore.WHITE)
-      print("")
-      print("3. Buy Fan")
-      print("   A fan is helpful for cooling your rigs!")
-      print(Fore.YELLOW)
-      print("   Cost: 💰 15")
-      print(Fore.WHITE)
-      print("")
-      print("4. Buy Cooling Rig")
-      print("   The Cooling Rig cools your PCs down dramatically")
-      cool_rig_price = (cool_factor + 1) * 50
-      print(Fore.YELLOW)
-      print(f"   Cost: 💰 {cool_rig_price}")
-      print(Fore.WHITE)
-      
-      bought = input("What would you like to buy? ")
-      if bought == "1":
-          if cost_multiplier <= ETH:
-              multiplier += 1
-              ETH -= cost_multiplier
-              print(f"You now have a {multiplier}x multiplier!")
-              input("Press Enter to continue...")
-          else:
-              print("You don't have enough Ethereum!")
-              input("Press Enter to continue...")
-      elif bought == "2":
-          if PC_price <= ETH:
-              program += 1
-              ETH -= PC_price
-              print(f"You now have {program} PCs!")
-              auto = True
-              input("Press Enter to continue...")
-          else:
-              print("You don't have enough Ethereum!")
-              input("Press Enter to continue...")
-      elif bought == "3":
-          if 15 <= ETH:
-              Temp -= 15
-              ETH -= 15
-              input("Press Enter to continue...")
-          else:
-              print("You don't have enough Ethereum!")
-              input("Press Enter to continue...")
-      elif bought == "4":
-          if cool_rig_price <= ETH:
-              cool_factor += 1.5
-              Temp -= cool_factor
-              ETH -= cool_rig_price
-              print(f"You now have a cooling rate of {cool_factor}!")
-              input("Press Enter to continue...")
-          else:
-              print("You don't have enough Ethereum!")
-              input("Press Enter to continue...")
-
-      else:
-          print(Fore.RED + "Invalid option. Please enter 1 or 2")
+          print(Fore.RED+"You need a Hard Drive to do that!")
           input("Press Enter to continue...")
+    elif user_input == "shop":
+      shopping = True
+      while shopping:
+        clear_screen()
+        print("SHOP")
+        print("1. New GPU")
+        print("   Every piece of Ethereum mined gets you more!")
+        cost_multiplier = (multiplier + 1) * 20
+        print(f"{Fore.YELLOW}   Cost: 💰 {cost_multiplier}")
+        print("   Requirement: Reach Milestone 5")
+        print(Fore.WHITE)
+        print("")
+        print("2. Buy Hard Drive")
+        print("   Maybe you will find some etherium!")
+        print(f"{Fore.YELLOW}   Cost: 💰 100")
+        print(Fore.WHITE)
+        print("3. Make a Bet")
+        print("   Arrange a bet with someone, you are betting on etherium!")
+        cost_multiplier = (multiplier + 1) * 20
+        print(f"{Fore.YELLOW}   Cost: 💰 50")
+        print("   Requirement: Reach milestone 10")
+        print(Fore.WHITE)
+        bought = input("What would you like to buy? ")
+        if bought == "1":
+          if milestone >= 5:
+            if cost_multiplier <= ETH:
+                multiplier += 1
+                ETH -= cost_multiplier
+                print(f"You now have {multiplier} GPUs!")
+                input("Press Enter to continue...")
+            else:
+                print(f"{Fore.RED}You don't have enough Ethereum!{Fore.WHITE}")
+                input("Press Enter to continue...")
+          else:
+            print(f"{Fore.RED}You don't meet the rquirement!{Fore.WHITE}")
+            input ("Press Enter to continue...")
+        elif bought == "2":
+            if auto == False:
+              if 100 <= ETH:
+                  ETH -= 100
+                  print(f"You now have a new Hard Drive to look through.")
+                  auto = True
+                  input("Press Enter to continue...")
+              else:
+                  print(f"{Fore.RED}You don't have enough Etherium!{Fore.WHITE}")
+                  input("Press Enter to continue...")
+            else:
+              print(f"{Fore.RED}Try looking through the Hard Drive you already have!{Fore.WHITE}")
+              input("Press Enter to continue...")
 
+        
+        elif bought == "3":
+          if milestone >= 10:
+            if ETH >=50:
+              ETH -= 50
+              play_game()
+            else:
+              print("You have insufficient Etherium!")
+              input("Press Enter to continue...")
+          else:
+            print("You need to get to milestone 10!")
+            input("Press Enter to continue...")
+        elif bought == "close":
+          shopping = False
+        else:
+            print(Fore.RED + "Invalid option. Please enter 1, 2,3, or close")
+            input("Press Enter to continue...")
+        
+  
     else:
-      print(Fore.RED + "Invalid choice. Type help for a list of actions.")
+      print(Fore.RED + "Invalid choice.  help for a list of actions.")
       input("Press enter to continue...")
-
-
